@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "marktplaats-messages"
-version = "0.1.0"
+version = "0.2.0"
 description = "Marktplaats Messages unofficial client"
 authors = [
   "Aleksandr Vinokurov <aleksandr.vin@gmail.com>"
