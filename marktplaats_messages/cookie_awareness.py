@@ -6,12 +6,19 @@ def sniff_clipboard():
     """
     Sniff Cookies from the clipboard. If you copy request from your browser's Network tab (in Developer Tools) as a Curl, then Cookie header will be there.
     """
+    return sniff_header_from_clipboard('Cookie')
+    
+
+def sniff_header_from_clipboard(name):
+    """
+    Sniff specific header from the clipboard. If you copy request from your browser's Network tab (in Developer Tools) as a Curl, then header will be there.
+    """
     from tkinter import Tk
     t = Tk()
     text = t.clipboard_get()
     t.destroy()
     import re
-    pattern = r"'Cookie: .*?'"
+    pattern = f"'{name}: .*?'"
     match = re.search(pattern, text)
     if match:
         result = match.group(0)[1:][:-1]
@@ -61,13 +68,13 @@ def store_in(cookie_str, domain):
         print(temp_file.read())
 
 
-def store_in_env(cookie_str):
-    print('COOKIE="' + cookie_str.split(": ")[1] + '"')
+def store_in_env(text):
+    s = text.split(": ")
+    k = s[0]
+    v = s[1]
+    print(k.upper() + '="' + v + '"')
 
 
 if __name__ == "__main__":
-    import os
-    import sys
-    x = sniff_clipboard()
-    store_in_env(x)
-    #store_in(x, os.environ.get('DOMAIN'))
+    store_in_env(sniff_clipboard())
+    store_in_env(sniff_header_from_clipboard('x-mp-xsrf'))

@@ -17,8 +17,12 @@ class Client:
         load_dotenv()
 
         if os.environ.get("COOKIE") != None:
-            print('Loading cookie from .env')
+            logging.info('Loading cookie from .env')
             self.headers['Cookie'] = os.environ.get("COOKIE")
+
+        if os.environ.get("X-MP-XSRF") != None:
+            logging.info('Loading x-mp-xsrf from .env')
+            self.headers['x-mp-xsrf'] = os.environ.get("X-MP-XSRF")
 
         cookie_file = '.cookies'
         self.jar = LWPCookieJar(cookie_file)
@@ -35,7 +39,7 @@ class Client:
 
 
     def _make_request(self, endpoint, method="GET", params=None, data=None):
-        url = f"{self.base_url}/{endpoint}/"
+        url = f"{self.base_url}/{endpoint}"
         response = self.session.request(method, url, headers=self.headers, params=params, json=data)
 
         # Save cookies to disk, even session cookies
@@ -64,7 +68,7 @@ class Client:
             'limit': '2',
             'excluded': 'mp:advertisement,_links'
         }
-        endpoint = "conversations"
+        endpoint = "conversations/"
         return self._make_request(endpoint, params=default_params | params)
 
 
@@ -85,8 +89,24 @@ class Client:
             'limit': '150',
             'expand': 'actions,mc:messages:0:150'
         }
-        endpoint = f"conversations/{conversation_id}/messages"
+        endpoint = f"conversations/{conversation_id}/messages/"
         return self._make_request(endpoint, params=default_params | params)
+
+    
+    def add_message(self, conversation_id, text):
+        """
+        Adds a message to a specific conversation by its ID.
+
+        Args:
+            conversation_id (str): The ID of the conversation to retrieve.
+            text (str): Text of the message.
+
+        Returns:
+            dict: New message details.
+        """
+       
+        endpoint = f"conversations/{conversation_id}/message"
+        return self._make_request(endpoint, method="POST", data={"text": text})
 
 
 if __name__ == "__main__":
@@ -98,7 +118,11 @@ if __name__ == "__main__":
     # convs = c.get_conversations()
     # for conv in convs['_embedded']['mc:conversations']:
     #     print(conv)
+
     messages = c.get_conversation('14s06:4cd8wk3:2kl3h37b0')
     print(messages)
     for m in messages['_embedded']['mc:message']:
         print(m)
+
+    messages = c.add_message('14s06:4cd8wk3:2kl3h37b0', "Almost there xo-xo")
+    print(messages)
