@@ -53,7 +53,7 @@ class Client:
         Retrieves a list of conversations.
 
         Args:
-            params (dict, optional): Additional parameters to filter conversations.
+            params (dict, optional): Additional parameters to limit and filter conversations.
 
         Returns:
             list: A list of conversations.
@@ -68,18 +68,25 @@ class Client:
         return self._make_request(endpoint, params=default_params | params)
 
 
-    def get_conversation(self, conversation_id):
+    def get_conversation(self, conversation_id, params={}):
         """
         Retrieves a specific conversation by its ID.
 
         Args:
             conversation_id (str): The ID of the conversation to retrieve.
+            params (dict, optional): Additional parameters to limit and filter conversation messages.
 
         Returns:
             dict: The conversation details.
         """
-        endpoint = f"conversations/{conversation_id}"
-        return self._make_request(endpoint)
+
+        default_params = {
+            'offset': '0',
+            'limit': '150',
+            'expand': 'actions,mc:messages:0:150'
+        }
+        endpoint = f"conversations/{conversation_id}/messages"
+        return self._make_request(endpoint, params=default_params | params)
 
 
 if __name__ == "__main__":
@@ -88,7 +95,10 @@ if __name__ == "__main__":
                         filename='app.log',
                         filemode='a')
     c = Client()
-    convs = c.get_conversations()
-    print(convs)
-    for conv in convs['_embedded']['mc:conversations']:
-        print(conv)
+    # convs = c.get_conversations()
+    # for conv in convs['_embedded']['mc:conversations']:
+    #     print(conv)
+    messages = c.get_conversation('14s06:4cd8wk3:2kl3h37b0')
+    print(messages)
+    for m in messages['_embedded']['mc:message']:
+        print(m)
