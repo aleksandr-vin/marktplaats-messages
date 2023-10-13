@@ -1,0 +1,7 @@
+.venv/
+dist/
+requests/
+.cookies
+__pycache__/
+app.log
+.env*
