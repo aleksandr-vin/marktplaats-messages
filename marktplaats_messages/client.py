@@ -64,8 +64,9 @@ class Client:
         url = f"{self.base_url}/{endpoint}"
         response = self.session.request(method, url, headers=self.headers, params=params, json=data)
 
-        # Save cookies to disk, even session cookies
-        self.jar.save(ignore_discard=True)
+        if self.jar:
+            # Save cookies to disk, even session cookies
+            self.jar.save(ignore_discard=True)
         
         # Check if the request was successful
         response.raise_for_status()
