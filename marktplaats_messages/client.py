@@ -7,7 +7,7 @@ import logging
 
 
 class Client:
-    def __init__(self, base_url="https://www.marktplaats.nl/messages/api", load_env=True, use_jar=True):
+    def __init__(self, base_url="https://www.marktplaats.nl/messages/api", load_env=True, use_jar=True, cookie=None, xsrf=None):
         self.base_url = base_url
         self.headers = {
             'Referer': 'https://www.marktplaats.nl/messages',
@@ -18,6 +18,12 @@ class Client:
         if load_env:
             self.set_xsrf()
             self.set_cookie()
+
+        if cookie:
+            self.set_cookie(cookie)
+
+        if xsrf:
+            self.set_xsrf(xsrf)
 
         if use_jar:
             cookie_file = '.cookies'
@@ -30,6 +36,7 @@ class Client:
             s.cookies = self.jar
         
         self.session = s
+
 
     def set_xsrf(self, xsrf=None):
         if xsrf:
