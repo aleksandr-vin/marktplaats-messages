@@ -7,35 +7,50 @@ import logging
 
 
 class Client:
-    def __init__(self, base_url="https://www.marktplaats.nl/messages/api"):
+    def __init__(self, base_url="https://www.marktplaats.nl/messages/api", load_env=True, use_jar=True):
         self.base_url = base_url
         self.headers = {
             'Referer': 'https://www.marktplaats.nl/messages',
         }
 
-        # Load environment variables from .env file
-        load_dotenv()
-
-        if os.environ.get("COOKIE") != None:
-            logging.info('Loading cookie from .env')
-            self.headers['Cookie'] = os.environ.get("COOKIE")
-
-        if os.environ.get("X-MP-XSRF") != None:
-            logging.info('Loading x-mp-xsrf from .env')
-            self.headers['x-mp-xsrf'] = os.environ.get("X-MP-XSRF")
-
-        cookie_file = '.cookies'
-        self.jar = LWPCookieJar(cookie_file)
-
-        # Load existing cookies (file might not yet exist)
-        try:
-            self.jar.load()
-        except:
-            pass
-
         s = requests.Session()
-        s.cookies = self.jar
+
+        if load_env:
+            self.set_xsrf()
+            self.set_cookie()
+
+        if use_jar:
+            cookie_file = '.cookies'
+            self.jar = LWPCookieJar(cookie_file)
+            # Load existing cookies (file might not yet exist)
+            try:
+                self.jar.load()
+            except:
+                pass
+            s.cookies = self.jar
+        
         self.session = s
+
+    def set_xsrf(self, xsrf=None):
+        if xsrf:
+            self.headers['x-mp-xsrf'] = xsrf
+        else:
+            # Load environment variables from .env file
+            load_dotenv()
+            if os.environ.get("X-MP-XSRF") != None:
+                logging.info('Loading x-mp-xsrf from .env')
+                self.headers['x-mp-xsrf'] = os.environ.get("X-MP-XSRF")
+
+
+    def set_cookie(self, cookie=None):
+        if cookie:
+            self.headers['Cookie'] = cookie
+        else:
+            # Load environment variables from .env file
+            load_dotenv()
+            if os.environ.get("COOKIE") != None:
+                logging.info('Loading cookie from .env')
+                self.headers['Cookie'] = os.environ.get("COOKIE")
 
 
     def _make_request(self, endpoint, method="GET", params=None, data=None):
