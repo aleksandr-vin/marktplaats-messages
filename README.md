@@ -31,6 +31,17 @@ Run next command to extract cookies and place them in *.env*:
 header-hunter > .env
 ```
 
-### No you can use client
 
-... [TBD]
+## Use
+
+Sample use would be:
+
+```python
+from marktplaats_messages.client import Client
+
+c = Client()
+
+convs = c.get_conversations()
+for conv in convs['_embedded']['mc:conversations']:
+    print("{id} [{unreadMessagesCount}] :: {title} :: {otherParticipant_name} :: {itemId}".format(**conv, **{'otherParticipant_name': conv['otherParticipant']['name']}))
+```
