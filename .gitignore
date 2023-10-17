@@ -5,3 +5,4 @@ requests/
 __pycache__/
 app.log
 .env*
+req*

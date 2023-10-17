@@ -9,12 +9,6 @@ python3 -m venv .venv
 pip install poetry
 ```
 
-### Install dependencies
-
-```
-sudo apt-get install python3-tk
-```
-
 ### Development install
 
 ```
@@ -24,7 +18,9 @@ poetry install
 
 ## Run
 
-### Sniff cookies
+### Authentication
+
+For now the only supported way is to steal cookies from the browser session. Find assistance from [header-hunter](https://github.com/aleksandr-vin/header-hunter).
 
 Open https://marktplaats.nl and log in, open Developer Tools > Network tab and right-click on any request to marktplaats.nl (after you log-in), choose Save as Curl.
 That will copy full request command (with cookies) to clip buffer.
@@ -32,7 +28,7 @@ That will copy full request command (with cookies) to clip buffer.
 Run next command to extract cookies and place them in *.env*:
 
 ```
-python -m marktplaats_messages.cookie_awareness > .env
+header-hunter > .env
 ```
 
 ### No you can use client
