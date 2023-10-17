@@ -64,7 +64,7 @@ class Client:
         url = f"{self.base_url}/{endpoint}"
         response = self.session.request(method, url, headers=self.headers, params=params, json=data)
 
-        if self.jar:
+        if hasattr(self, 'jar'):
             # Save cookies to disk, even session cookies
             self.jar.save(ignore_discard=True)
         
